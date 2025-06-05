@@ -19,6 +19,8 @@ async function bootstrap() {
     }
   );
 
+  await app.listen();
+
   Logger.log(`Orders running on port ${envs.port}`)
 }
 bootstrap();
