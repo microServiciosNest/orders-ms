@@ -5,6 +5,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PaginationDto } from 'src/common';
 import { OrderPaginationDto } from './dto/order-pagination-dto';
+import { ChangeOrderStatusDto } from './dto/change-order-status';
 
 @Controller()
 export class OrdersController {
@@ -25,5 +26,9 @@ export class OrdersController {
   @MessagePattern({ cmd: 'find_one_order' })
   findOne(@Payload('id', ParseUUIDPipe) id: string) {
     return this.ordersService.findOne(id);
+  }
+  @MessagePattern({ cmd: 'change_Order_Status' })
+  changeStatus(@Payload() changeOrderStatusDto:ChangeOrderStatusDto) {
+    return this.ordersService.changeStatus(changeOrderStatusDto);
   }
 }
