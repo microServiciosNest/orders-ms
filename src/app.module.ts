@@ -7,4 +7,4 @@ import { OrdersModule } from './orders/orders.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,31 +1,35 @@
-import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaClient } from '@prisma/client';
-import { RpcException } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { OrderPaginationDto } from './dto/order-pagination-dto';
-import { last } from 'rxjs';
+import { firstValueFrom, last } from 'rxjs';
 import { ChangeOrderStatusDto } from './dto/change-order-status';
+import { PRODUCT_SERVICE } from 'src/config';
 
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
 
-  //private readonly logger = new Logger('OrdersService');
+  constructor(
+    @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy
+  ) {
+    super();
+  }
 
   async onModuleInit() {
     await this.$connect();
-    //this.logger.log('DataBase Connected');
+    // this.logger.log('DataBase Connected');
   }
 
 
-  create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderDto) {
 
-    return{
-      createOrderDto
-    }
-    // return this.order.create({
-    //   data: createOrderDto
-    // })
+    const ids = [3,4];
+    const products = await firstValueFrom(
+      this.productsClient.send({ cmd: 'validate_product' }, ids)
+    )
+    return products;
   }
 
   async findAll(orderPaginationDto: OrderPaginationDto) {
@@ -81,11 +85,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     const { id, status } = changeOrderStatusDto;
     const order = await this.findOne(id)
 
-    if(order.status === status) { return order; }
+    if (order.status === status) { return order; }
 
     return this.order.update({
       where: { id },
-      data: { status : status},
+      data: { status: status },
     })
   }
 
