@@ -16,7 +16,6 @@ datasource db {
 enum OrderStatus {
   PENDING
   DELIVERED
-  COMPLETED
   CANCELLED
 }
 
@@ -25,12 +24,13 @@ model Order {
   totalAmount Float
   totalItems  Int
 
-  status OrderStatus
+  status OrderStatus @default(PENDING)
   paid   Boolean     @default(false)
-  paidAr DateTime?
+  paidAt DateTime?
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   OrderItem OrderItem[]
 }
 
